@@ -1,4 +1,4 @@
-package;
+package data;
 
 #if MODS_ALLOWED
 import sys.io.File;
@@ -26,6 +26,8 @@ typedef StageFile = {
 	var camera_opponent:Array<Float>;
 	var camera_girlfriend:Array<Float>;
 	var camera_speed:Null<Float>;
+	@:optional
+	var fliplayering:Bool;
 }
 
 class StageData {

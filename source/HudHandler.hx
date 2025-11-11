@@ -36,7 +36,10 @@ typedef Hudstyle = {
     @:optional
     var noteskin:String;
     @:optional
+    var notesplash:String;
+    @:optional
     var falback:String;
+    
     
 }
 
@@ -62,12 +65,12 @@ class HudHandler extends FlxGroup{
     public var healthBar:Bar;
     public var timebg:FlxSprite;
     public var bg:FlxSprite;
-    public var spritegroup:FlxTypedGroup<FlxSprite>;
     public var timeBar:Bar;
     var json:Hudstyle;
     public var script:HaxeScript = null;
     public var iconp1overide:Array<Float>; 
     public var iconp1vis:Bool = true;
+    public var iconp2vis:Bool = true;
     public var iconp2overide:Array<Float>;
     public var scorposs:Array<Float> =[0,0];
     var hudscriptpath:String;
@@ -177,10 +180,7 @@ class HudHandler extends FlxGroup{
                 timeTxt.size = 24;
                 timeTxt.y += 3;
             }
-            spritegroup = new FlxTypedGroup<FlxSprite>();
             runScriptFunction('BarCreatePost', []);
-            add(spritegroup);
-            spritegroup.cameras = [PlayState.instance.camHUD];
         }
     }
 
@@ -215,11 +215,17 @@ class HudHandler extends FlxGroup{
         if (bars.iconP1visible != null) {
             iconp1vis = bars.iconP1visible;
         }
+        if (bars.iconP2visible != null) {
+            iconp2vis = bars.iconP2visible;
+        }
         if (bars.scorpos != null) {
             scorposs = bars.scorpos;
         }
         if(bars.noteskin == null){
             bars.noteskin = 'NOTE_assets';
+        }
+        if(bars.notesplash == null){
+            bars.notesplash = 'noteSplashes';
         }
 
     }
@@ -284,6 +290,34 @@ public function getNoteskin(player:Bool):String {
     } else {
         // No script loaded, use fallback
         return bars.noteskin;
+    }
+}
+public function getNotesplash():String {
+    if (script != null) {
+        
+
+        // Grab the function from the script
+        var func = script.interpreter.variables.get("getNotesplash");
+
+        if (func != null) {
+            var notesplash:String = cast Reflect.callMethod(null, func, []);
+           
+
+            if (notesplash != null) {
+                return notesplash;
+            } else {
+             
+                return bars.notesplash;
+            }
+        } 
+        else {
+           
+            
+            return bars.notesplash;
+        }
+    } else {
+        // No script loaded, use fallback
+        return bars.notesplash;
     }
 }
 public function gettimebargraphics(barnum:Int):String {
@@ -425,7 +459,6 @@ public function gettimebargraphics(barnum:Int):String {
 				script = HaxeScript.HaxeScript.FromFile(Paths.getPreloadPath(hudscriptpath), this); 
 				script.onError = PlayState.instance.hscriptError;
 				hasscript = true;
-                
 				#end 
 			}
 			catch(e:Dynamic){  
@@ -460,8 +493,8 @@ public function gettimebargraphics(barnum:Int):String {
 
     public function reloadHealthBarColors()
 	{
-		healthBar.setColors(FlxColor.fromRGB(PlayState.instance.dad.healthColorArray[0], PlayState.instance.dad.healthColorArray[1], PlayState.instance.dad.healthColorArray[2]),
-			FlxColor.fromRGB(PlayState.instance.boyfriend.healthColorArray[0], PlayState.instance.boyfriend.healthColorArray[1], PlayState.instance.boyfriend.healthColorArray[2]));
+		healthBar.setColors(FlxColor.fromRGB(PlayState.instance.stage.dad.healthColorArray[0], PlayState.instance.stage.dad.healthColorArray[1], PlayState.instance.stage.dad.healthColorArray[2]),
+			FlxColor.fromRGB(PlayState.instance.stage.boyfriend.healthColorArray[0], PlayState.instance.stage.boyfriend.healthColorArray[1], PlayState.instance.stage.boyfriend.healthColorArray[2]));
 
 		healthBar.updateBar();
 	}
